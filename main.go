@@ -22,13 +22,14 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/dustin/go-humanize"
+	"github.com/godbus/dbus"
 	"github.com/gosexy/gettext"
 	"github.com/janimo/textsecure"
-	"github.com/ubuntu-core/snappy/helpers"
+	//	"github.com/ubuntu-core/snappy/helpers"
 	"gopkg.in/qml.v1"
 )
 
-var appName = "textsecure.jani"
+var appName = "harbour-sailsecure"
 
 var appVersion = "0.3.11"
 
@@ -51,7 +52,8 @@ var (
 )
 
 func init() {
-	flag.StringVar(&mainQml, "qml", "qml/phoneui/main.qml", "The qml file to load.")
+	//flag.StringVar(&mainQml, "qml", "qml/phoneui/main.qml", "The qml file to load.")
+	flag.StringVar(&mainQml, "qml", "/usr/share/harbour-textsecure-qml/qml/phoneui/main.qml", "The qml file to load.")
 }
 
 func saveAttachment(a *textsecure.Attachment) (string, error) {
@@ -181,6 +183,32 @@ func messageHandler(msg *textsecure.Message) {
 
 	saveMessage(m)
 	updateSession(session)
+
+	// FIXME only if app is not focused
+	notifiyUser(msg.Source(), msg.Message())
+}
+
+func notifiyUser(title string, body string) error {
+	conn, err := dbus.SessionBus()
+	if err != nil {
+		//panic(err)
+		return err
+	}
+
+	var m map[string]dbus.Variant
+	m = make(map[string]dbus.Variant)
+	m["category"] = dbus.MakeVariant("x-nemo.messaging.im")
+
+	obj := conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
+	call := obj.Call("org.freedesktop.Notifications.Notify", 0, "", uint32(0),
+		"", title, body, []string{},
+		m,
+		int32(0))
+	if call.Err != nil {
+		//panic(call.Err)
+		return err
+	}
+	return nil
 }
 
 func receiptHandler(source string, devID uint32, timestamp uint64) {
@@ -449,10 +477,11 @@ func (api *textsecureAPI) SendMessage(to, message string) error {
 func copyAttachment(src string) (string, error) {
 	_, b := filepath.Split(src)
 	dest := filepath.Join(attachDir, b)
-	err := helpers.CopyFile(src, dest, helpers.CopyFlagOverwrite)
-	if err != nil {
-		return "", err
-	}
+	// FIXME
+	//err := helpers.CopyFile(src, dest, helpers.CopyFlagOverwrite)
+	//if err != nil {
+	//	return "", err
+	//}
 	return dest, nil
 }
 
@@ -706,18 +735,30 @@ func avatarImageProvider(id string, width, height int) image.Image {
 }
 
 func runUI() error {
-	engine = qml.NewEngine()
+	engine = qml.SailfishNewEngine()
 	engine.AddImageProvider("avatar", avatarImageProvider)
 	initModels()
 	engine.Context().SetVar("textsecure", api)
 	engine.Context().SetVar("appVersion", appVersion)
 
-	component, err := engine.LoadFile(mainQml)
+	//component, err := engine.LoadFile(mainQml)
+	component, err := engine.SailfishSetSource("qml/main.qml")
 	if err != nil {
 		return err
 	}
-	win = component.CreateWindow(nil)
-	win.Show()
+
+	/*
+		engine.addImportPath("/usr/share/harbour-textsecure-qml/qml");
+		qml.RegisterTypes("harbour.mitakuuluu2.client", 1, 0, "ContactsFilterModel")
+		qml.RegisterTypes("harbour.mitakuuluu2.client", 1, 0, "ConversationModel")
+		qml.RegisterTypes("harbour.mitakuuluu2.client", 1, 0, "AudioRecorder")
+		qml.RegisterTypes("harbour.mitakuuluu2.client", 1, 0, "ConversationFilterModel")
+		qml.RegisterTypes("harbour.mitakuuluu2.client", 1, 0, "DConfValue")
+		qml.RegisterSingletonTypes("harbour.mitakuuluu2.client", 1, 0, "ContactsBaseModel")
+	*/
+
+	win = component.SailfishCreateWindow()
+	win.SailfishShow()
 
 	go runBackend()
 	win.Wait()
