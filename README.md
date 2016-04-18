@@ -4,6 +4,8 @@ This is a Signal compatible client for Sailfish OS, written in Go and QML.
 It builds upon the great [Go textsecure package] (https://github.com/janimo/textsecure) and modified versions of the
 minimalistic gui at [http://gitlab.unique-conception.org/thebootroo/mitakuuluu-ui-ng]
 
+This is a project in early alpha stage. It works for me as a daily messenger. But don't expect a stable software!
+
 What works
 -----------
 
@@ -42,15 +44,15 @@ Install golang into mersdk (Sailfish VirtualBox)
 
 Setup development environment and get all needed source
 
-> mkdir -p ~/sailsecure/bin
-> export GOPATH=~/sailsecure
-> export PATH=$PATH:$GOPATH
-> go get github.com/geobra/harbour-sailsecure
+ * mkdir -p ~/sailsecure/bin
+ * export GOPATH=~/sailsecure
+ * export PATH=$PATH:$GOPATH
+ * go get github.com/geobra/harbour-sailsecure
 
 Build
 
-> cd ~/sailsecure/src/github.com/geobra/harbour-sailsecure/ 
-> mb2 -t SailfishOS-armv7hl build -j 2
+ * cd ~/sailsecure/src/github.com/geobra/harbour-sailsecure/ 
+ * mb2 -t SailfishOS-armv7hl build -j 2
 
 Install
 
