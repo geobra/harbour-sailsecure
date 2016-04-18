@@ -1,3 +1,7 @@
+0.1 (April 18 2016)
+Forked janimo's textsecure-qml github project to start implementing Sailfish OS App
+
+==================================================
 0.3.11 (Feb 29 2016)
 --------------------
 
