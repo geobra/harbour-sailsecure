@@ -1,45 +1,71 @@
-# TextSecure client for the Ubuntu Phone
+# TextSecure client for Sailfish OS
 
-This is a Signal compatible client for the Ubuntu Phone, written in Go and QML.
-It builds upon the [Go textsecure package] (https://github.com/janimo/textsecure) and modified versions of the
-Telegram for Ubuntu Phone QML interface.
+This is a Signal compatible client for Sailfish OS, written in Go and QML.
+It builds upon the great [Go textsecure package] (https://github.com/janimo/textsecure) and modified versions of the
+minimalistic gui at [http://gitlab.unique-conception.org/thebootroo/mitakuuluu-ui-ng]
 
 What works
 -----------
 
  * Phone registration
- * Contact discovery
  * Direct and group messages
- * Photo, video, audio and contact attachments in both direct and group mode
- * Preview for photo and audio attachments
+ * View received Photos
  * Storing conversations
+ * LED Notification on incoming messages (as long as App is running in background)
 
 What is missing
 ---------------
 
- * Push notifications
+ * A lot of the usual UI things, like in other messaging clients
+ * Contact syncronisation (you have to add contacts in a text file)
  * Most settings that are available in the Android app
  * Encrypted message store
  * Desktop client provisioning/syncing
  * Encrypted phone calls
+ * ... and so on
 
 There are still bugs and UI/UX quirks.
 
 Installation
 ------------
 
-Download the latest release from the app store or build it yourself (you'll need docker running)
+Download and install the Sailfish SDK
+[https://sailfishos.org/wiki/Application_Development]
 
-    ./build.sh rel
+ * Read ALL the documents!
 
-Install on a phone connected via adb
+Install golang into mersdk (Sailfish VirtualBox)
+[https://github.com/nekrondev/jolla_go]
 
-    ./install.sh
+ * I use golang 1.5 currently. Maybee it also works with golang 1.6
+ * Resolve errors ;-)
 
-For more details check the [wiki] (https://github.com/janimo/textsecure-qml/wiki/Installation)
+Setup development environment and get all needed source
+
+> mkdir -p ~/sailsecure/bin
+> export GOPATH=~/sailsecure
+> export PATH=$PATH:$GOPATH
+> go get github.com/geobra/harbour-sailsecure
+
+Build
+
+> cd ~/sailsecure/src/github.com/geobra/harbour-sailsecure/ 
+> mb2 -t SailfishOS-armv7hl build -j 2
+
+Install
+
+ * Copy RPMS/harbour-sailsecure*.rpm to your phone
+ * devel-su rpm -ivh harbour-sailsecure*.rpm
+ * Copy example contacts.yml file to /home/nemo/.config/harbour-sailsecure/
+
 
 Contributing
------------
+------------
+Developers are welcome to contribute!
+ * Are you familiar with qml? Who can port [https://github.com/janimo/textsecure-qml/qml/] to this project?!
+ * Any other contribution would also be great!
 
-User and developer discussions happen on the [mailing list] (https://groups.google.com/forum/#!forum/textsecure-go), everything else
-is on github.
+Harbour?
+--------
+This App will hit the Sailfish store, as soon as the contacts syncronisation is working.
+
