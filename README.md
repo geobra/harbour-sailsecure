@@ -14,12 +14,12 @@ What works
  * View received Photos
  * Storing conversations
  * LED Notification on incoming messages (as long as App is running in background)
+ * Contact syncronisation 
 
 What is missing
 ---------------
 
  * A lot of the usual UI things, like in other messaging clients
- * Contact syncronisation (you have to add contacts in a text file)
  * Most settings that are available in the Android app
  * Encrypted message store
  * Desktop client provisioning/syncing
