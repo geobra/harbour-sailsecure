@@ -185,7 +185,8 @@ func messageHandler(msg *textsecure.Message) {
 	updateSession(session)
 
 	// FIXME only if app is not focused
-	notifiyUser(msg.Source(), msg.Message())
+	notifiyUser(telToName(msg.Source()), msg.Message())
+	//notifiyUser(msg.Source(), msg.Message())
 }
 
 func notifiyUser(title string, body string) error {
@@ -204,10 +205,12 @@ func notifiyUser(title string, body string) error {
 		"", title, body, []string{},
 		m,
 		int32(0))
+
 	if call.Err != nil {
 		//panic(call.Err)
 		return err
 	}
+
 	return nil
 }
 
@@ -326,12 +329,7 @@ func runBackend() {
 		MessageHandler:      messageHandler,
 		ReceiptHandler:      receiptHandler,
 		RegistrationDone:    registrationDone,
-	}
-
-	if isPhone {
-		client.GetLocalContacts = getAddressBookContactsFromContentHub
-	} else {
-		client.GetLocalContacts = getDesktopContacts
+		GetLocalContacts:    getSailfishContacts,
 	}
 
 	err := textsecure.Setup(client)
@@ -346,11 +344,8 @@ func runBackend() {
 	}
 
 	api.PhoneNumber = config.Tel
-
-	if exists(contactsFile) {
-		api.HasContacts = true
-		refreshContacts()
-	}
+	api.HasContacts = true
+	refreshContacts()
 
 	sendUnsentMessages()
 

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -14,11 +15,17 @@ import (
 	"bitbucket.org/llg/vcard"
 	"github.com/godbus/dbus"
 	"github.com/janimo/textsecure"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/ttacon/libphonenumber"
+	"gopkg.in/qml.v1"
 )
+
+const QTCONTACTS_PATH = "/home/nemo/.local/share/system/Contacts/qtcontacts-sqlite/contacts.db"
 
 // getDesktopContacts reads the contacts for the desktop app from a file
 func getDesktopContacts() ([]textsecure.Contact, error) {
+	log.Println("getDesktopContacts")
 	return textsecure.ReadContacts(filepath.Join(configDir, "contacts.yml"))
 }
 
@@ -141,5 +148,70 @@ func getAddressBookContactsFromContentHub() ([]textsecure.Contact, error) {
 	if err != nil {
 		return nil, err
 	}
+	return contacts, nil
+}
+
+// Get name of contact with number tel
+func (c *Contacts) Name(tel string) string {
+	for _, r := range c.contacts {
+		if r.Tel == tel {
+			return r.Name
+		}
+	}
+
+	// name not found. just return number
+	return tel
+}
+
+// Initialize list of local contacts
+func (c *Contacts) Init() error {
+	var err error
+	c.contacts, err = getSailfishContacts()
+	if err != nil {
+		return err
+	}
+
+	c.Len = len(c.contacts)
+	qml.Changed(c, &c.Len)
+
+	return nil
+}
+
+// Get local sailfish contacts
+func getSailfishContacts() ([]textsecure.Contact, error) {
+	//	log.Println("getSailfishContacts")
+	db, err := sqlx.Open("sqlite3", QTCONTACTS_PATH)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("Failed to open contacts database")
+		return nil, err
+	}
+
+	contacts := []textsecure.Contact{}
+	err = db.Select(&contacts, `
+        select
+                c.displayLabel as name,
+                p.phoneNumber as tel
+        from Contacts as c
+        join PhoneNumbers p
+                on c.contactId = p.contactId`)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("Failed to query contacts database")
+		return nil, err
+	}
+	// Reformat numbers in E.164 format
+	for i := range contacts {
+		n := contacts[i].Tel
+		n = strings.TrimPrefix(n, "+")
+		num, err := libphonenumber.Parse(fmt.Sprintf("+%s", n), "")
+		if err == nil {
+			contacts[i].Tel = libphonenumber.Format(num, libphonenumber.E164)
+			//			log.Println(contacts[i].Tel)
+		}
+	}
+
 	return contacts, nil
 }
