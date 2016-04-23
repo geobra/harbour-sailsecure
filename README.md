@@ -2,7 +2,8 @@
 
 This is a Signal compatible client for Sailfish OS, written in Go and QML.
 It builds upon the great [Go textsecure package] (https://github.com/janimo/textsecure) and modified versions of the
-minimalistic gui at [http://gitlab.unique-conception.org/thebootroo/mitakuuluu-ui-ng]
+(minimalistic gui) [http://gitlab.unique-conception.org/thebootroo/mitakuuluu-ui-ng]. Some Ideas and concepts are taken
+from (WhisperFish) [https://github.com/aebruno/whisperfish] which is also a Signal client for Sailfish OS.
 
 This is a project in early alpha stage. It works for me as a daily messenger. But don't expect a stable software!
 

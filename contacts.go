@@ -177,6 +177,7 @@ func (c *Contacts) Init() error {
 	return nil
 }
 
+// from https://github.com/aebruno/whisperfish/contacts.go
 // Get local sailfish contacts
 func getSailfishContacts() ([]textsecure.Contact, error) {
 	//	log.Println("getSailfishContacts")
