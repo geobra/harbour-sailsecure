@@ -1,9 +1,9 @@
 # TextSecure client for Sailfish OS
 
 This is a Signal compatible client for Sailfish OS, written in Go and QML.
-It builds upon the great [Go textsecure package] (https://github.com/janimo/textsecure) and modified versions of the
-(minimalistic gui) [http://gitlab.unique-conception.org/thebootroo/mitakuuluu-ui-ng]. Some Ideas and concepts are taken
-from (WhisperFish) [https://github.com/aebruno/whisperfish] which is also a Signal client for Sailfish OS.
+It builds upon the great [Go textsecure package] (https://github.com/janimo/textsecure) and modified versions of a
+[minimalistic gui] (http://gitlab.unique-conception.org/thebootroo/mitakuuluu-ui-ng). Some Ideas and concepts are taken
+from [WhisperFish] (https://github.com/aebruno/whisperfish) which is also a Signal client for Sailfish OS.
 
 This is a project in early alpha stage. It works for me as a daily messenger. But don't expect a stable software!
 
@@ -32,13 +32,11 @@ There are still bugs and UI/UX quirks.
 Installation
 ------------
 
-Download and install the Sailfish SDK
-[https://sailfishos.org/wiki/Application_Development]
+Download and install the [Sailfish SDK] (https://sailfishos.org/wiki/Application_Development)
 
  * Read ALL the documents!
 
-Install golang into mersdk (Sailfish VirtualBox)
-[https://github.com/nekrondev/jolla_go]
+Install golang into mersdk Sailfish VirtualBox as [descriped here] (https://github.com/nekrondev/jolla_go)
 
  * I use golang 1.5 currently. Maybee it also works with golang 1.6
  * Resolve errors ;-)
@@ -59,7 +57,6 @@ Install
 
  * Copy RPMS/harbour-sailsecure*.rpm to your phone
  * devel-su rpm -ivh harbour-sailsecure*.rpm
- * Copy example contacts.yml file to /home/nemo/.config/harbour-sailsecure/
 
 
 Contributing
@@ -70,5 +67,5 @@ Developers are welcome to contribute!
 
 Harbour?
 --------
-This App will hit the Sailfish store, as soon as the contacts syncronisation is working.
+This App will hit the Sailfish store soon...
 
