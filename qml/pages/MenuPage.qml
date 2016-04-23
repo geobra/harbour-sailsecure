@@ -24,13 +24,14 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter;
             }
             Label {
-                text: "Me FIXME";
+                text: "Me";
                 font.pixelSize: Theme.fontSizeLarge;
                 anchors {
                     left: parent.left;
                     margins: Theme.paddingMedium;
                 }
             }
+/*
             ComboBox {
                 label: qsTr ("Status");
                 currentIndex: 0;
@@ -44,6 +45,7 @@ Page {
                     right: parent.right;
                 }
             }
+*/
             Separator {
                 primaryColor: Qt.rgba (1,1,1, 0.5);
                 secondaryColor: Qt.rgba (1,1,1, 0.0);
@@ -56,8 +58,8 @@ Page {
         model: [
             { "title" : qsTr ("Contacts"),      "icon" : "image://theme/icon-m-people",         "page" : pageContacts },
             { "title" : qsTr ("Conversations"), "icon" : "image://theme/icon-m-chat",           "page" : pageSessions },
-            { "title" : qsTr ("Preferences"),   "icon" : "image://theme/icon-l-developer-mode", "page" : pagePreferences },
-            { "title" : qsTr ("Account"),       "icon" : "image://theme/icon-s-secure",         "page" : pageAccount },
+//            { "title" : qsTr ("Preferences"),   "icon" : "image://theme/icon-l-developer-mode", "page" : pagePreferences },
+//            { "title" : qsTr ("Account"),       "icon" : "image://theme/icon-s-secure",         "page" : pageAccount },
         ];
         delegate: BackgroundItem {
             id: item;

@@ -15,6 +15,7 @@ Page {
             PageHeader {
                 title: qsTr ("Contacts");
             }
+/*
             SearchField {
                 placeholderText: qsTr ("Filter");
                 anchors {
@@ -22,6 +23,7 @@ Page {
                     right: parent.right;
                 }
             }
+*/
         }
 
 	model: contactsModel.len
@@ -73,11 +75,13 @@ Page {
             }
         }        anchors.fill: parent;
 
+/*
         PullDownMenu {
             MenuItem {
                 text: qsTr ("Add new contact...");
             }
         }
+*/
     }
 
     function openChatById(chatId, tel, properties) {

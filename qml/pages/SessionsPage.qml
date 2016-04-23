@@ -16,6 +16,7 @@ Page {
             PageHeader {
                 title: qsTr ("Conversations");
             }
+/*
             SearchField {
                 placeholderText: qsTr ("Filter");
                 anchors {
@@ -23,6 +24,7 @@ Page {
                     right: parent.right;
                 }
             }
+*/
         }
 
 	model: sessionsModel.len
@@ -51,28 +53,9 @@ Page {
                     opacity: 0.5;
                     anchors.fill: parent;
 			Text {
-/*
-				Notification {
-     				   	id: notification
-				        //category: "x-nemo.example"
-					category: "x-nemo.messaging.im"
-				        summary: ses.name
-				        body: sessionsModel.get(ses.tel).last
-				        //previewSummary: ses.name
-				        //previewBody: sessionsModel.get(ses.tel).last
-				}
-*/
 				font.pixelSize: 80 // FIXME
 				color: "black"
 				text: sessionsModel.get(ses.tel).unread
-/*
-				onTextChanged: {
-					if (text != 0) {
-						console.log("sessionModel changed: " + text)
-						notification.publish()
-					}
-				}
-*/
 			}			
                 }
             }
@@ -105,11 +88,13 @@ Page {
         }
         anchors.fill: parent;
 
+/*
         PullDownMenu {
             MenuItem {
                 text: qsTr ("Add new contact...");
             }
         }
+*/
     }
 
     function openChatById(chatId, tel, properties) {
