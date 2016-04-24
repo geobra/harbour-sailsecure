@@ -47,7 +47,7 @@ Page {
             width: Theme.iconSizeMedium;
             height: width;
             smooth: true;
-            source: "qrc:///qml/img/avatar.png";
+            //source: "qrc:///qml/img/avatar.png";
             fillMode: Image.PreserveAspectCrop;
             antialiasing: true;
             anchors {

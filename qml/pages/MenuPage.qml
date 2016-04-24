@@ -18,7 +18,7 @@ Page {
             }
             Image {
                 id: img;
-                source: "qrc:///qml/img/avatar.png";
+                //source: "qrc:///qml/img/avatar.png";
                 width: Theme.iconSizeLarge;
                 height: width;
                 anchors.horizontalCenter: parent.horizontalCenter;
@@ -58,6 +58,7 @@ Page {
         model: [
             { "title" : qsTr ("Contacts"),      "icon" : "image://theme/icon-m-people",         "page" : pageContacts },
             { "title" : qsTr ("Conversations"), "icon" : "image://theme/icon-m-chat",           "page" : pageSessions },
+            { "title" : qsTr ("About"), 	"icon" : "image://theme/icon-m-about",          "page" : pageAbout },
 //            { "title" : qsTr ("Preferences"),   "icon" : "image://theme/icon-l-developer-mode", "page" : pagePreferences },
 //            { "title" : qsTr ("Account"),       "icon" : "image://theme/icon-s-secure",         "page" : pageAccount },
         ];
