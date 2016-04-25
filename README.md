@@ -5,7 +5,7 @@ It builds upon the great [Go textsecure package] (https://github.com/janimo/text
 [minimalistic gui] (http://gitlab.unique-conception.org/thebootroo/mitakuuluu-ui-ng). Some Ideas and concepts are taken
 from [WhisperFish] (https://github.com/aebruno/whisperfish) which is also a Signal client for Sailfish OS.
 
-This is a project in early alpha stage. It works for me as a daily messenger. But don't expect a stable software!
+This is a project in early stage. It works for me as a daily messenger. But don't expect it to be 'feature complete'!
 
 What works
 -----------
@@ -67,5 +67,5 @@ Developers are welcome to contribute!
 
 Harbour?
 --------
-This App will hit the Sailfish store soon...
+This App will hopefully hit the Sailfish store soon...
 
