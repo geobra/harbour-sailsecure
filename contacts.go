@@ -177,6 +177,23 @@ func (c *Contacts) Init() error {
 	return nil
 }
 
+func getCorrectedPhoneNumber(prefix string, tel string) string {
+	correctedTel := tel
+
+	hasPlus := strings.HasPrefix(tel, "+")
+	hasDoubleZero := strings.HasPrefix(tel, "00")
+
+	if hasDoubleZero == true {
+		correctedTel = correctedTel[2:len(correctedTel)]
+		correctedTel = "+" + correctedTel
+	} else if hasPlus == false {
+		correctedTel = correctedTel[1:len(correctedTel)]
+		correctedTel = prefix + correctedTel
+	}
+
+	return correctedTel
+}
+
 // from https://github.com/aebruno/whisperfish/contacts.go
 // Get local sailfish contacts
 func getSailfishContacts() ([]textsecure.Contact, error) {
@@ -203,15 +220,26 @@ func getSailfishContacts() ([]textsecure.Contact, error) {
 		}).Error("Failed to query contacts database")
 		return nil, err
 	}
+
+	num, _ := libphonenumber.Parse(config.Tel, "")
+	countryCode := num.GetCountryCode()
+	phonePrefix := fmt.Sprintf("+%d", countryCode)
+
 	// Reformat numbers in E.164 format
 	for i := range contacts {
 		n := contacts[i].Tel
+		log.Println(n)
+
 		n = strings.TrimPrefix(n, "+")
+		newNum := n
 		num, err := libphonenumber.Parse(fmt.Sprintf("+%s", n), "")
 		if err == nil {
-			contacts[i].Tel = libphonenumber.Format(num, libphonenumber.E164)
-			//			log.Println(contacts[i].Tel)
+			newNum = libphonenumber.Format(num, libphonenumber.E164)
+			log.Println(newNum)
 		}
+
+		contacts[i].Tel = getCorrectedPhoneNumber(phonePrefix, newNum)
+		log.Println(contacts[i].Tel)
 	}
 
 	return contacts, nil

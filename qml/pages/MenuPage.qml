@@ -24,7 +24,7 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter;
             }
             Label {
-                text: "Me";
+                text: "Home";
                 font.pixelSize: Theme.fontSizeLarge;
                 anchors {
                     left: parent.left;

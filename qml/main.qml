@@ -24,6 +24,7 @@ ApplicationWindow {
 
     Component { id: pageVerification; VerificationCodePage { } }
     Component { id: pageSignIn; SignInPage { } }
+    Component { id: pageAbout; AboutPage { } }
 
 
 	function error(errorMsg) {
