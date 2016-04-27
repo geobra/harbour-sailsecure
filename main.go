@@ -29,7 +29,7 @@ import (
 	"gopkg.in/qml.v1"
 )
 
-var appName = "harbour-sailsecure"
+var appName = "sailsecure"
 
 var appVersion = "0.3.11"
 
