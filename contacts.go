@@ -228,18 +228,18 @@ func getSailfishContacts() ([]textsecure.Contact, error) {
 	// Reformat numbers in E.164 format
 	for i := range contacts {
 		n := contacts[i].Tel
-		log.Println(n)
+		//log.Println(n)
 
 		n = strings.TrimPrefix(n, "+")
 		newNum := n
 		num, err := libphonenumber.Parse(fmt.Sprintf("+%s", n), "")
 		if err == nil {
 			newNum = libphonenumber.Format(num, libphonenumber.E164)
-			log.Println(newNum)
+			//log.Println(newNum)
 		}
 
 		contacts[i].Tel = getCorrectedPhoneNumber(phonePrefix, newNum)
-		log.Println(contacts[i].Tel)
+		//log.Println(contacts[i].Tel)
 	}
 
 	return contacts, nil

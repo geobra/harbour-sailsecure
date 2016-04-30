@@ -184,9 +184,9 @@ func messageHandler(msg *textsecure.Message) {
 	saveMessage(m)
 	updateSession(session)
 
-	// FIXME only if app is not focused
-	notifiyUser(telToName(msg.Source()), msg.Message())
-	//notifiyUser(msg.Source(), msg.Message())
+	if api.AppActive == false {
+		notifiyUser(telToName(msg.Source()), msg.Message())
+	}
 }
 
 func notifiyUser(title string, body string) error {
@@ -347,6 +347,9 @@ func runBackend() {
 	api.HasContacts = true
 	refreshContacts()
 
+	// app is active state
+	api.AppActive = true
+
 	sendUnsentMessages()
 
 	// Make sure to use names not numbers in session titles
@@ -356,8 +359,9 @@ func runBackend() {
 
 	for {
 		if err := textsecure.StartListening(); err != nil {
+			log.Println("listen error. sleep 30 seconds...")
 			log.Println(err)
-			time.Sleep(3 * time.Second)
+			time.Sleep(30 * time.Second)
 		}
 	}
 }
@@ -393,6 +397,7 @@ type textsecureAPI struct {
 	PushToken       string
 	ActiveSessionID string
 	PhoneNumber     string
+	AppActive       bool
 }
 
 var api = &textsecureAPI{}
