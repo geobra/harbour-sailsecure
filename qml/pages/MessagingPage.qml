@@ -153,11 +153,10 @@ Page {
                 }
 
                 Text {
-                    text: (visible ? msg.message || "" : "");
+                    text: msg.message
                     color: Theme.primaryColor;
                     width: Math.min (item.maxContentWidth, contentWidth);
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere;
-                    visible: (msg.cType === 0);
                     font {
                         family: Theme.fontFamilyHeading;
                         pixelSize: Theme.fontSizeMedium;
@@ -168,10 +167,9 @@ Page {
                     }
                 }
                 Image {
-                    source: (visible ? msg.attachment || "" : "");   // FIXME!
+                    source: msg.attachment
                     width: Math.min (item.maxContentWidth, sourceSize.width);
                     fillMode: Image.PreserveAspectFit;
-                    visible: (msg.cType === 2);
                     anchors {
                         left: (item.alignRight ? parent.left : undefined);
                         right: (!item.alignRight ? parent.right : undefined);
@@ -233,6 +231,13 @@ Page {
 			onClicked: {
 				sendMessage(editbox.text);
 			}
+			onPressAndHold: {
+            			//chatInputArea.attachmentPath = ""
+            			//fileModel.searchPath = "foo"
+            			pageStack.push(imagePicker)
+            			//imagepicker.selected.connect(chatInputArea.setAttachmentPath)
+        		}
+
 		}
 	}
 
