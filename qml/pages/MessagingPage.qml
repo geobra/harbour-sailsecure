@@ -254,7 +254,6 @@ Page {
 				 console.log(path)
 	       			 sendmsgview.attachmentPath = path
     			}
-
 		}
 	}
 

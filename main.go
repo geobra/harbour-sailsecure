@@ -196,9 +196,14 @@ func notifiyUser(title string, body string) error {
 		return err
 	}
 
+	// https://talk.maemo.org/showthread.php?t=92303
 	var m map[string]dbus.Variant
 	m = make(map[string]dbus.Variant)
+
 	m["category"] = dbus.MakeVariant("x-nemo.messaging.im")
+	m["x-nemo-preview-body"] = dbus.MakeVariant(body)
+	m["x-nemo-preview-summary"] = dbus.MakeVariant(title)
+	m[""] = dbus.MakeVariant(Signature{"sv"})
 
 	obj := conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
 	call := obj.Call("org.freedesktop.Notifications.Notify", 0, "", uint32(0),

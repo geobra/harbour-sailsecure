@@ -35,6 +35,7 @@ ApplicationWindow {
 	Component { id: pageVerification; VerificationCodePage { } }
 	Component { id: pageSignIn; SignInPage { } }
 	Component { id: pageAbout; AboutPage { } }
+	Component { id: imagePicker; ImagePickerPage { } }
 
 	ImagePickerPage {
         	id: pageImagePicker
