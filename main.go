@@ -203,7 +203,6 @@ func notifiyUser(title string, body string) error {
 	m["category"] = dbus.MakeVariant("harbour-sailsecure.message")
 	m["x-nemo-preview-body"] = dbus.MakeVariant(body)
 	m["x-nemo-preview-summary"] = dbus.MakeVariant(title)
-	m[""] = dbus.MakeVariant(Signature{"sv"})
 
 	obj := conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
 	call := obj.Call("org.freedesktop.Notifications.Notify", 0, "", uint32(0),
