@@ -1,11 +1,16 @@
 import QtQuick 2.0
 import QtQuick.Window 2.0;
 import Sailfish.Silica 1.0
+import org.nemomobile.commhistory 1.0
+import Sailfish.Contacts 1.0
+import org.nemomobile.contacts 1.0
+
 
 Page {
     allowedOrientations: Orientation.All
 
-    id: page;
+    id: chats;
+    objectName: "messageingPage"
 
     // remove the active session from textsecure api on PageBack
     onStatusChanged: {
@@ -153,11 +158,10 @@ Page {
                 }
 
                 Text {
-                    text: (visible ? msg.message || "" : "");
+                    text: msg.message
                     color: Theme.primaryColor;
                     width: Math.min (item.maxContentWidth, contentWidth);
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere;
-                    visible: (msg.cType === 0);
                     font {
                         family: Theme.fontFamilyHeading;
                         pixelSize: Theme.fontSizeMedium;
@@ -168,10 +172,9 @@ Page {
                     }
                 }
                 Image {
-                    source: (visible ? msg.attachment || "" : "");   // FIXME!
+                    source: msg.attachment
                     width: Math.min (item.maxContentWidth, sourceSize.width);
                     fillMode: Image.PreserveAspectFit;
-                    visible: (msg.cType === 2);
                     anchors {
                         left: (item.alignRight ? parent.left : undefined);
                         right: (!item.alignRight ? parent.right : undefined);
@@ -205,6 +208,8 @@ Page {
 
 	Row {
 		id: sendmsgview
+    		property var attachmentPath: ""
+
        		anchors {
      			left: parent.left;
        			right: parent.right;
@@ -219,20 +224,37 @@ Page {
         		id: editbox;
 			width: parent.width - 100 
         		placeholderText: qsTr ("Enter message...");
+
+			onTextChanged: {
+				sendButton.icon.source = getSendButtonImage()
+			}
     		}
 
-		Button {
+		IconButton {
 //			anchors {
 //        	            bottom: parent.bottom
 //                	    right: parent.right
 //                	}
 
 			id: sendButton
-			text: "Send"
+			icon.source: getSendButtonImage()
 			width: 100
 			onClicked: {
-				sendMessage(editbox.text);
+				if (editbox.text.length === 0 && sendmsgview.attachmentPath.length === 0) {
+					sendmsgview.attachmentPath = ""
+	                                fileModel.searchPath = "/home/nemo/Pictures"
+	                                pageStack.push(pageImagePicker)
+        	                        pageImagePicker.selected.connect(setAttachmentPath)
+				} else {
+					sendMessage(editbox.text, sendmsgview.attachmentPath);
+				}
 			}
+
+			function setAttachmentPath(path) {
+				 console.log(path)
+	       			 sendmsgview.attachmentPath = path
+    			}
+
 		}
 	}
 
@@ -242,11 +264,25 @@ Page {
                         console.log(p + ": " + item[p]);
         }
 
-	function sendMessage(text) {
-        	if (text.length === 0) return;
-        	editbox.text = "";
-        	textsecure.sendMessage(messagesModel.tel, text);
+	function sendMessage(text, attach) {
+        	if (text.length === 0 && attach.length === 0) 
+		{
+			return;
+		}
 
+        	editbox.text = "";
+
+		if (attach.length === 0)
+		{
+			console.log("send only msg: " + text)
+        		textsecure.sendMessage(messagesModel.tel, text);
+		}
+		else
+		{
+			console.log("send attach msg: " + attach)
+        		textsecure.sendAttachment(messagesModel.tel, text, attach);
+			sendmsgview.attachmentPath = ""
+		}
 		//var info = textsecure.groupInfo(messagesModel.tel)
 		//console.log(info)
     	}
@@ -279,5 +315,17 @@ Page {
 			returnText = "../img/Checks1_2x_white.png";
 		}
 		return returnText;
+	}
+
+	function getSendButtonImage() {
+		if (editbox.text.length === 0 && sendmsgview.attachmentPath.length === 0) {
+			return "image://theme/icon-m-attach"
+		} else {
+			if (sendmsgview.attachmentPath.length > 0) {
+				return "image://theme/icon-m-media"
+			} else {
+				return "image://theme/icon-m-enter-accept"
+			}
+		}
 	}
 }

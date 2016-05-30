@@ -36,6 +36,9 @@ ApplicationWindow {
 	Component { id: pageSignIn; SignInPage { } }
 	Component { id: pageAbout; AboutPage { } }
 
+	ImagePickerPage {
+        	id: pageImagePicker
+	}
 
 	function error(errorMsg) {
         	console.log(errorMsg)

@@ -477,11 +477,12 @@ func (api *textsecureAPI) SendMessage(to, message string) error {
 func copyAttachment(src string) (string, error) {
 	_, b := filepath.Split(src)
 	dest := filepath.Join(attachDir, b)
-	// FIXME
-	//err := helpers.CopyFile(src, dest, helpers.CopyFlagOverwrite)
-	//if err != nil {
-	//	return "", err
-	//}
+
+	err := CopyFile(src, dest)
+	if err != nil {
+		fmt.Printf("CopyFile failed %q\n", err)
+		return "", err
+	}
 	return dest, nil
 }
 
@@ -513,8 +514,10 @@ func (api *textsecureAPI) SendContactAttachment(to, message string, file string)
 var maxAttachmentSize int64 = 100 * 1024 * 1024
 
 func (api *textsecureAPI) SendAttachment(to, message string, file string) error {
+	fmt.Printf("call to SendAttachment\n")
 	fi, err := os.Stat(file)
 	if err != nil {
+		fmt.Printf("cannot stat file %s\n", file)
 		return err
 	}
 	if fi.Size() > maxAttachmentSize {
@@ -732,6 +735,76 @@ func avatarImageProvider(id string, width, height int) image.Image {
 
 	}
 	return img
+}
+
+// http://stackoverflow.com/questions/21060945/simple-way-to-copy-a-file-in-golang
+// CopyFile copies a file from src to dst. If src and dst files exist, and are
+// the same, then return success. Otherise, attempt to create a hard link
+// between the two files. If that fail, copy the file contents from src to dst.
+func CopyFile(src, dst string) (err error) {
+	fmt.Printf("Call to copy src %s to dst %s\n", src, dst)
+	sfi, err := os.Stat(src)
+	if err != nil {
+		fmt.Printf("cannot stat src file %s\n", src)
+		return
+	}
+	if !sfi.Mode().IsRegular() {
+		// cannot copy non-regular files (e.g., directories,
+		// symlinks, devices, etc.)
+		return fmt.Errorf("CopyFile: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
+	}
+	dfi, err := os.Stat(dst)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			fmt.Printf("cannot stat dest file %s\n", dst)
+			return
+		}
+	} else {
+		if !(dfi.Mode().IsRegular()) {
+			return fmt.Errorf("CopyFile: non-regular destination file %s (%q)", dfi.Name(), dfi.Mode().String())
+		}
+		if os.SameFile(sfi, dfi) {
+			fmt.Printf("same src and dest file\n")
+			return
+		}
+	}
+	if err = os.Link(src, dst); err == nil {
+		fmt.Printf("hard linked src %s to dest %s \n", src, dst)
+		return
+	}
+	fmt.Printf("try copy file content\n")
+	err = copyFileContents(src, dst)
+	return
+}
+
+// copyFileContents copies the contents of the file named src to the file named
+// by dst. The file will be created if it does not already exist. If the
+// destination file exists, all it's contents will be replaced by the contents
+// of the source file.
+func copyFileContents(src, dst string) (err error) {
+	in, err := os.Open(src)
+	if err != nil {
+		fmt.Printf("cannot open src file %s\n", src)
+		return
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		fmt.Printf("cannot open dst file %s\n", dst)
+		return
+	}
+	defer func() {
+		cerr := out.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+	if _, err = io.Copy(out, in); err != nil {
+		fmt.Printf("error on copy src %s to dst %s\n", src, dst)
+		return
+	}
+	err = out.Sync()
+	return
 }
 
 func runUI() error {
