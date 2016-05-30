@@ -28,7 +28,7 @@ import Sailfish.Silica 1.0
 
 Dialog {
     id: page
-    objectName: "imagePicker"
+    objectName: "imagePickerPage"
     canAccept: selectedPath.length > 0
     allowedOrientations: Orientation.All
 

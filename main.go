@@ -200,7 +200,7 @@ func notifiyUser(title string, body string) error {
 	var m map[string]dbus.Variant
 	m = make(map[string]dbus.Variant)
 
-	m["category"] = dbus.MakeVariant("x-nemo.messaging.im")
+	m["category"] = dbus.MakeVariant("harbour-sailsecure.message")
 	m["x-nemo-preview-body"] = dbus.MakeVariant(body)
 	m["x-nemo-preview-summary"] = dbus.MakeVariant(title)
 	m[""] = dbus.MakeVariant(Signature{"sv"})
