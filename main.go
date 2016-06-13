@@ -53,7 +53,7 @@ var (
 
 func init() {
 	//flag.StringVar(&mainQml, "qml", "qml/phoneui/main.qml", "The qml file to load.")
-	flag.StringVar(&mainQml, "qml", "/usr/share/harbour-textsecure-qml/qml/phoneui/main.qml", "The qml file to load.")
+	flag.StringVar(&mainQml, "qml", "/usr/share/sailsecure/qml/main.qml", "The qml file to load.")
 }
 
 func saveAttachment(a *textsecure.Attachment) (string, error) {
@@ -200,7 +200,7 @@ func notifiyUser(title string, body string) error {
 	var m map[string]dbus.Variant
 	m = make(map[string]dbus.Variant)
 
-	m["category"] = dbus.MakeVariant("harbour-sailsecure.message")
+	m["category"] = dbus.MakeVariant("sailsecure.message")
 	m["x-nemo-preview-body"] = dbus.MakeVariant(body)
 	m["x-nemo-preview-summary"] = dbus.MakeVariant(title)
 

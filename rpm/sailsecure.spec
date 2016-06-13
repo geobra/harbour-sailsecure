@@ -9,21 +9,15 @@ Version:    0.2.0
 Release:    1
 Group:      Applications/Multimedia
 License:    GPL
-#Source0: https://github.com/example/app/archive/v%{version}.tar.gz
-#Requires:   mapplauncherd-booster-silica-qt5
-#Requires:   nemo-qml-plugin-thumbnailer-qt5
 Requires:   sailfishsilica-qt5
-#Requires:   qt5-qtdocgallery
 BuildRequires:  pkgconfig(sailfishapp)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Core)
-#BuildRequires:  pkgconfig(qdeclarative5-boostable)
 BuildRequires:  desktop-file-utils
 
 %description
-Dew point application will display the calculated dew point given for
-temperature and humidity.
+Signal client for SailfishOS
 
 
 %prep
@@ -34,8 +28,6 @@ rm -rf vendor
 
 %build
 # >> build pre
-#GOPATH=%(pwd):~/
-#GOPATH=/home/mersdk/share/development/apps/SailSecure
 GOPATH=%(pwd)/../../../..
 GOROOT=~/go
 export GOPATH GOROOT
@@ -59,26 +51,12 @@ install -d %{buildroot}%{_bindir}
 install -p -m 0755 %(pwd)/%{name} %{buildroot}%{_bindir}/%{name}
 install -d %{buildroot}%{_datadir}/applications
 install -d %{buildroot}%{_datadir}/%{name}/qml
-#install -d %{buildroot}%{_datadir}/%{name}/qml/phoneui
-#install -d %{buildroot}%{_datadir}/%{name}/qml/phoneui/components
-#install -d %{buildroot}%{_datadir}/%{name}/qml/phoneui/components/listitems
-#install -d %{buildroot}%{_datadir}/%{name}/qml/phoneui/components/listitems/artwork
-#install -d %{buildroot}%{_datadir}/%{name}/qml/phoneui/images
-#install -d %{buildroot}%{_datadir}/%{name}/qml/phoneui/js
-#install -d %{buildroot}%{_datadir}/%{name}/qml/phoneui/ui
-#install -d %{buildroot}%{_datadir}/%{name}/qml/i18n
-#install -m 0444 -t %{buildroot}%{_datadir}/%{name}/qml/components qml/phoneui/components/*
-#install -d %{buildroot}%{_datadir}/%{name}/qml/components/listitems qml/phoneui/components/listitems/*
-#install -d %{buildroot}%{_datadir}/%{name}/qml/components/listitems/artwork qml/phoneui/components/listitems/artwork/*
-#install -m 0444 -t %{buildroot}%{_datadir}/%{name}/qml/images qml/phoneui/images/*
-#install -m 0444 -t %{buildroot}%{_datadir}/%{name}/qml/js qml/phoneui/js/*
-#install -m 0444 -t %{buildroot}%{_datadir}/%{name}/qml/ui qml/phoneui/ui/*
-#install -m 0444 -t %{buildroot}%{_datadir}/%{name}/qml qml/phoneui/main.qml
-#install -m 0444 -t %{buildroot}%{_datadir}/%{name}/qml/i18n i18n/*.qm
+install -d %{buildroot}%{_datadir}/lipstick/notificationcategories
 cp -r qml/* %{buildroot}%{_datadir}/%{name}/qml 
 install -d %{buildroot}%{_datadir}/icons/hicolor/86x86/apps
 install -m 0444 -t %{buildroot}%{_datadir}/icons/hicolor/86x86/apps qml/%{name}.png
-install -p %(pwd)/harbour-sailsecure.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
+install -p %(pwd)/sailsecure.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
+install -p %(pwd)/sailsecure.message.conf %{buildroot}%{_datadir}/lipstick/notificationcategories/%{name}.message.conf
 # >> install post
 # << install post
 
@@ -92,6 +70,7 @@ desktop-file-install --delete-original       \
 %{_datadir}/%{name}/qml
 #%{_datadir}/%{name}/qml/i18n
 %{_datadir}/icons/hicolor/86x86/apps
+%{_datadir}/lipstick/notificationcategories/%{name}.message.conf
 %{_bindir}
 # >> files
 # << files
