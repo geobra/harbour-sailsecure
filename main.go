@@ -33,6 +33,10 @@ var appName = "sailsecure"
 
 var appVersion = "0.3.11"
 
+var stopChan = make(chan bool)
+var reconnectTimer *time.Timer
+var backendRunning = false
+
 var (
 	isPhone      bool
 	isPushHelper bool
@@ -98,6 +102,8 @@ func groupUpdateMsg(tels []string, title string) string {
 
 func messageHandler(msg *textsecure.Message) {
 	var err error
+
+	log.Printf("#### Message Handler called ####")
 
 	f := ""
 	mt := ""
@@ -325,6 +331,7 @@ func setup() {
 }
 
 func runBackend() {
+	log.Println("runBackend()")
 	client := &textsecure.Client{
 		GetConfig:           getConfig,
 		GetPhoneNumber:      getPhoneNumber,
@@ -351,9 +358,6 @@ func runBackend() {
 	api.HasContacts = true
 	refreshContacts()
 
-	// app is active state
-	api.AppActive = true
-
 	sendUnsentMessages()
 
 	// Make sure to use names not numbers in session titles
@@ -361,13 +365,34 @@ func runBackend() {
 		s.Name = telToName(s.Tel)
 	}
 
+	go sendFalseToStopChan()
 	for {
-		if err := textsecure.StartListening(); err != nil {
-			log.Println("listen error. sleep 30 seconds...")
+		log.Println("about to textsecure.StartListening(60)")
+		backendRunning = true
+		if err := textsecure.StartListening(60); err != nil {
+			log.Println("textsecure.StartListening(60) returned error:")
 			log.Println(err)
-			time.Sleep(30 * time.Second)
+
+			if true == <-stopChan {
+				log.Println("listen error or timeout. stop through stop chan")
+				textsecure.StopListening()
+				backendRunning = false
+				return
+			}
+
+			log.Println("listen error or timeout. sleep some time before reconnect")
+			time.Sleep(5 * time.Second)
 		}
+		log.Println("#behind if, in front of for...")
 	}
+}
+
+func sendFalseToStopChan() {
+	stopChan <- false
+}
+
+func sendTrueToStopChan() {
+	stopChan <- true
 }
 
 func sendUnsentMessages() {
@@ -382,10 +407,12 @@ func sendUnsentMessages() {
 
 func main() {
 	setup()
-	log.Println("Setup completed")
 	if isPushHelper {
 		pushHelperProcess()
 	}
+
+	api.AppActive = true
+	go sendFalseToStopChan()
 
 	err := qml.Run(runUI)
 	if err != nil {
@@ -475,6 +502,14 @@ func humanizeTimestamp(ts uint64) string {
 
 func (api *textsecureAPI) SendMessage(to, message string) error {
 	return sendMessageHelper(to, message, "")
+}
+
+func (api *textsecureAPI) DisconnectEvent() {
+	disconnectEvent()
+}
+
+func (api *textsecureAPI) ConnectEvent() {
+	connectEvent()
 }
 
 // copyAttachment makes a copy of a file that is in the volatile content hub cache
@@ -812,6 +847,8 @@ func copyFileContents(src, dst string) (err error) {
 }
 
 func runUI() error {
+	reconnectTimer = time.AfterFunc(time.Second*1, startListening)
+
 	engine = qml.SailfishNewEngine()
 	engine.AddImageProvider("avatar", avatarImageProvider)
 	initModels()
@@ -837,7 +874,28 @@ func runUI() error {
 	win = component.SailfishCreateWindow()
 	win.SailfishShow()
 
-	go runBackend()
+	//go runBackend()
+
 	win.Wait()
 	return nil
+}
+
+func disconnectEvent() {
+	log.Println("disconnectEvent")
+	reconnectTimer.Stop()
+	if backendRunning == true {
+		go sendTrueToStopChan()
+	}
+}
+
+func connectEvent() {
+	log.Println("connectEvent")
+	go reconnectTimer.Reset(time.Second * 10)
+}
+
+func startListening() {
+	log.Println("startListening")
+	if backendRunning == false {
+		go runBackend()
+	}
 }
