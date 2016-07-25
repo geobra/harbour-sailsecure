@@ -239,6 +239,7 @@ Page {
 			id: sendButton
 			icon.source: getSendButtonImage()
 			width: 100
+			enabled: mainWindow.appIsConnected
 			onClicked: {
 				if (editbox.text.length === 0 && sendmsgview.attachmentPath.length === 0) {
 					sendmsgview.attachmentPath = ""

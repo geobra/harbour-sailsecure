@@ -48,7 +48,7 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             font.pixelSize: Theme.fontSizeExtraSmall
             color: Theme.secondaryColor
-            text: "Version 0.2"
+            text: "Version 0.3.0"
         }
         Item {
             width: parent.width
