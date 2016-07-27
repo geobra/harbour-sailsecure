@@ -35,7 +35,6 @@ var appVersion = "0.3.11"
 
 var stopChan = make(chan bool)
 var reconnectTimer *time.Timer
-var backendRunning = false
 
 var (
 	isPhone      bool
@@ -368,22 +367,23 @@ func runBackend() {
 	go sendFalseToStopChan()
 	for {
 		log.Println("about to textsecure.StartListening(60)")
-		backendRunning = true
+		api.BackendRunning = true
+		qml.Changed(api, &api.BackendRunning)
 		if err := textsecure.StartListening(60); err != nil {
 			log.Println("textsecure.StartListening(60) returned error:")
 			log.Println(err)
 
 			if true == <-stopChan {
 				log.Println("listen error or timeout. stop through stop chan")
+				api.BackendRunning = false
+				qml.Changed(api, &api.BackendRunning)
 				textsecure.StopListening()
-				backendRunning = false
 				return
 			}
 
 			log.Println("listen error or timeout. sleep some time before reconnect")
 			time.Sleep(5 * time.Second)
 		}
-		log.Println("#behind if, in front of for...")
 	}
 }
 
@@ -429,6 +429,7 @@ type textsecureAPI struct {
 	ActiveSessionID string
 	PhoneNumber     string
 	AppActive       bool
+	BackendRunning  bool
 }
 
 var api = &textsecureAPI{}
@@ -883,7 +884,7 @@ func runUI() error {
 func disconnectEvent() {
 	log.Println("disconnectEvent")
 	reconnectTimer.Stop()
-	if backendRunning == true {
+	if api.BackendRunning == true {
 		go sendTrueToStopChan()
 	}
 }
@@ -895,7 +896,7 @@ func connectEvent() {
 
 func startListening() {
 	log.Println("startListening")
-	if backendRunning == false {
+	if api.BackendRunning == false {
 		go runBackend()
 	}
 }
