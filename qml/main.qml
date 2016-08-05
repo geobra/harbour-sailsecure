@@ -10,6 +10,7 @@ ApplicationWindow {
 	onApplicationActiveChanged: {
 		if (applicationActive == true) {
 			textsecure.appActive = true
+			textsecure.unreadMsg = 0
 		}
 		else {
 			textsecure.appActive = false
@@ -92,6 +93,7 @@ ApplicationWindow {
 			textsecure.disconnectEvent()
 		}
             mainWindow.appIsConnected = mainWindow.hasConnection()
+	    textsecure.isOnline(mainWindow.appIsConnected)
         }
     }
 
@@ -111,6 +113,7 @@ ApplicationWindow {
 			textsecure.disconnectEvent()
 		}
             mainWindow.appIsConnected = mainWindow.hasConnection()
+	    textsecure.isOnline(mainWindow.appIsConnected)
         }
     }
 
@@ -130,6 +133,7 @@ ApplicationWindow {
 			textsecure.disconnectEvent()
 		}
             mainWindow.appIsConnected = mainWindow.hasConnection()
+	    textsecure.isOnline(mainWindow.appIsConnected)
         }
     }
 }

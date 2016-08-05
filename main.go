@@ -35,6 +35,7 @@ var appVersion = "0.3.11"
 
 var stopChan = make(chan bool)
 var reconnectTimer *time.Timer
+var isOnline = false
 
 var (
 	isPhone      bool
@@ -191,6 +192,9 @@ func messageHandler(msg *textsecure.Message) {
 
 	if api.AppActive == false {
 		notifiyUser(telToName(msg.Source()), msg.Message())
+
+		api.UnreadMsg++
+		qml.Changed(api, &api.UnreadMsg)
 	}
 }
 
@@ -412,7 +416,9 @@ func main() {
 	}
 
 	api.AppActive = true
+	api.UnreadMsg = 0
 	go sendFalseToStopChan()
+	go triggerWatchdog()
 
 	err := qml.Run(runUI)
 	if err != nil {
@@ -430,6 +436,7 @@ type textsecureAPI struct {
 	PhoneNumber     string
 	AppActive       bool
 	BackendRunning  bool
+	UnreadMsg       int
 }
 
 var api = &textsecureAPI{}
@@ -511,6 +518,11 @@ func (api *textsecureAPI) DisconnectEvent() {
 
 func (api *textsecureAPI) ConnectEvent() {
 	connectEvent()
+}
+
+func (api *textsecureAPI) IsOnline(online bool) {
+	isOnline = online
+	fmt.Printf("isOnline %i\n", isOnline)
 }
 
 // copyAttachment makes a copy of a file that is in the volatile content hub cache
@@ -891,12 +903,29 @@ func disconnectEvent() {
 
 func connectEvent() {
 	log.Println("connectEvent")
-	go reconnectTimer.Reset(time.Second * 10)
+	go reconnectTimer.Reset(time.Second * 20)
 }
 
 func startListening() {
-	log.Println("startListening")
-	if api.BackendRunning == false {
+	fmt.Printf("startListening (backendRunning: %i, isOnline: %i \n", api.BackendRunning, isOnline)
+	if api.BackendRunning == false && isOnline == true {
 		go runBackend()
+	}
+}
+
+func triggerWatchdog() {
+	for {
+		// trigger watchdog all 5 minutes
+		time.Sleep(time.Second * 300)
+		watchdog()
+	}
+}
+
+func watchdog() {
+	// check if connected an try to reconnect if not...
+	log.Println("watchdog")
+	if api.BackendRunning == false {
+		// inject connectEvent
+		connectEvent()
 	}
 }
